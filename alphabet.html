@@ -1,0 +1,134 @@
+<head>
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@1,800&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      font-family: "Open Sans", sans-serif;
+    }
+
+    #titleImage {
+      width: 100%;
+      max-width: 900px;
+      margin: 10px auto;
+      text-align: center;
+    }
+
+    .letter {
+      display: inline-block;
+      height: 300px;
+      width: 200px;
+      font-size: 80px;
+      font-weight: 800;
+      text-align: center;
+      padding: 20px;
+      margin: 0 0 10px 0;
+      background-color: rgb(210, 255, 234);
+      border: 3px solid black;
+      border-radius: 10px;
+      user-select: none;
+    }
+
+    .letter img {
+      max-width: 200px;
+      max-height: 200px;
+      display: block;
+      margin: 0 auto;
+    }
+    .letter:hover {
+      cursor: pointer;
+    }
+  </style>
+  <script>
+    let score = 0;
+    let randomLetter;
+    const alphabet = [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+      "j",
+      "k",
+      "l",
+      "m",
+      "n",
+      "o",
+      "p",
+      "q",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w",
+      "x",
+      "y",
+      "z",
+    ];
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    function play(audio, callback) {
+      audio.play();
+      if (callback) {
+        //When the audio object completes it's playback, call the callback
+        //provided
+        audio.addEventListener("ended", callback);
+      }
+    }
+
+    function init() {
+      alphabet.forEach((letter, index) => {
+        document.getElementById("alphabetContainer").innerHTML += `
+        <div data-index="${index}" onclick="document.getElementById('audio-${letter}').play();" data-letter='${letter}' class="letter"><audio src="${letter}.mp3" id="audio-${letter}"></audio><img onerror="this.src='picsoon.png';" src="${letter}.png" />${letter.toUpperCase()}</div>`;
+      });
+    }
+
+    function runQuiz() {
+      randomLetter = Math.floor(Math.random() * 26);
+      console.log(randomLetter);
+      document.querySelectorAll(".letter").forEach((letter, index) => {
+        letter["data-letterIndex"] = index;
+        letter.addEventListener("click", checkAnswer);
+      });
+      setTimeout(function () {
+        document.getElementsByTagName("audio")[randomLetter].play();
+      }, 1000);
+      document.getElementById("findtheAudio").play();
+    }
+
+    function checkAnswer() {
+      if (randomLetter === Number(this.getAttribute("data-index"))) {
+        setTimeout(function () {
+          runQuiz();
+        }, 2000);
+        document.getElementById("wellDoneAudio").play();
+        score++;
+        //play sound. Nice work! next one
+      } else {
+        document.getElementById("tryAgainAudio").play();
+        score = 0;
+      }
+      document.getElementById("showScore").innerText = score;
+    }
+  </script>
+</head>
+<body onload="init();">
+  <header>
+    <img id="titleImage" src="abcTitle.png" />
+    <h1>Streak: <span id="showScore">0</span></h1>
+  </header>
+
+  <div id="alphabetContainer" onclick="console.log(this);"></div>
+  <button onclick="runQuiz();">Quiz!</button>
+  <audio id="findtheAudio" src="findthe.mp3"></audio>
+  <audio id="wellDoneAudio" src="welldone.mp3"></audio>
+  <audio id="tryAgainAudio" src="hmthatsnotquiterighttryagain.mp3"></audio>
+</body>
+<!-- audio queue https://gist.github.com/yuraloginoff/1e390ea33edb83d82732 -->
