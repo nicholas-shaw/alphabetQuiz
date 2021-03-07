@@ -9,6 +9,15 @@
       font-family: "Open Sans", sans-serif;
     }
 
+    #showStreak {
+     position: fixed;
+      top: 10px;
+      right: 10px;
+      background-color: white;
+      border-radius: 5px;
+      box-shadow: 0px 3px 5px rgba(0,0,0,0.3);
+    }
+    
     #titleImage {
       width: 100%;
       max-width: 900px;
@@ -122,7 +131,7 @@
 <body onload="init();">
   <header>
     <img id="titleImage" src="abcTitle.png" />
-    <h1>Streak: <span id="showScore">0</span></h1>
+    <h1 id='showStreak'>Streak: <span id="showScore">0</span></h1>
   </header>
 
   <div id="alphabetContainer" onclick="console.log(this);"></div>
