@@ -1,0 +1,244 @@
+<head>
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@1,800&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+
+:root {
+  --ease-quick: 0.1s;
+  --ease-slow: 0.5s;
+  --highlight-color: red;
+  --default-bg: rgb(204, 204, 204);
+}
+
+
+    body,html {
+      font-family: "Open Sans", sans-serif;
+      margin: 0;
+      padding: 0;
+      font-size: 16px;
+    }
+
+    #titleImage {
+      display: block;
+      width: 100%;
+      max-width: 900px;
+      margin: 10px auto;
+      text-align: center;
+    }
+
+    article { 
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      flex-wrap: wrap;
+      width: 100%;
+      margin: 10px;
+    }
+
+    .letter {
+      display: inline-block;
+      height: 20rem;
+      width: 12.5rem;
+      font-size: 80px;
+      font-weight: 800;
+      text-align: center;
+      padding: 1rem;
+      margin: 10px;
+      background-color: var(--default-bg);
+      border: 5px solid black;
+      border-radius: 10px;
+      user-select: none;
+    }
+
+    .letter img {
+      max-width:100%;
+      max-height: 100%;
+      height:auto;
+      display: block;
+      margin: 0 auto;
+
+    }
+
+    .imageContainer {
+      height: 200px;
+      width: 200px;
+    }
+
+    .letter:hover {
+      border-color: var(--highlight-color);
+      cursor: pointer;
+    }
+
+    .highlightLetter {
+      background-color: yellow;
+      transition: background-color var(--ease-slow) ease-in-out;
+    }
+
+    footer {
+      position: sticky;
+      margin: 0;
+      padding: 0;
+      min-height: 50px;
+      bottom: 0px;
+      left: 0px;
+      width: 100%;
+      color: white;
+      text-align: center;
+      background: rgb(32, 32, 32)
+    }
+
+    #buttonsContainer {
+      padding: 1rem;
+    }
+
+  </style>
+  <script>
+    let score = 0;
+    let randomLetter;
+    const alphabet = [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+      "j",
+      "k",
+      "l",
+      "m",
+      "n",
+      "o",
+      "p",
+      "q",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w",
+      "x",
+      "y",
+      "z",
+    ];
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    function playback(audio, callback) {
+
+audio.play();
+if(callback)
+{
+    audio.onended = callback;
+}
+}
+
+    function play(audio, callback) {
+      console.log(audio.currentSrc)
+      if(audio) {
+        console.log("not ended")
+        setTimeout(function(){play(audio)},100)
+      } else {
+        //When the audio object completes it's playback, call the callback
+        //provided
+        console.log("ended")
+        audio.play();
+      }
+    }
+
+    function speakText(text) {
+      if ("speechSynthesis" in window) {
+        var to_speak = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(to_speak);
+        document.getElementById("notice").innerText =
+          "Turn up the volume to hear.";
+      } else {
+        document.getElementById("notice").innerText = text;
+      }
+    }
+
+    function init() {
+      alphabet.forEach((letter, index) => {
+        document.querySelector("article").innerHTML += `
+        <div data-index="${index}" onclick="playback(document.getElementById('audio-${letter}'));" data-letter='${letter}' class="letter"><audio class="letterSound" src="${letter}.mp3" id="audio-${letter}"></audio><div class="imageContainer"><img onerror="this.src='picsoon.png'; this.onerror = null"" src="${letter}.png" /></div>${letter.toUpperCase()}</div>`;
+      });
+    }
+
+    function useInSentence(letter) {
+
+    }
+
+    function getRandomLetter() {
+      return Math.floor(Math.random() * 26);
+    }
+
+    function highlightRandomLetter() {
+      const randomLetter = getRandomLetter();
+      document.getElementsByClassName("letter")[randomLetter].scrollIntoView();
+      setTimeout(function(){
+        document.getElementsByClassName("letter")[randomLetter].classList.remove("highlightLetter");
+      }, 1000)
+      document.getElementsByClassName("letter")[randomLetter].classList.add("highlightLetter")
+      playback(document.getElementsByClassName("letterSound")[randomLetter]);
+    }
+
+    function runQuiz() {
+      // speakText("Ready? Here we go!");
+      const randomLetter = getRandomLetter();
+      document.querySelectorAll(".letter").forEach((letter, index) => {
+        letter["data-letterIndex"] = index;
+        letter.addEventListener("click", checkAnswer);
+      });
+      setTimeout(function () {
+        playback(document.getElementsByClassName("letterSound")[randomLetter]);
+      }, 1000);
+      playback(document.getElementById("findtheAudio"));
+    }
+
+    function checkAnswer() {
+      console.log(`Clicked ${this.getAttribute("data-index")}`)
+      if (randomLetter === Number(this.getAttribute("data-index"))) {
+        setTimeout(function () {
+          runQuiz();
+        }, 2000);
+        document.getElementById("wellDoneAudio").play();
+        score++;
+        //play sound. Nice work! next one
+      } else {
+        document.getElementById("tryAgainAudio").play();
+        score = 0;
+      }
+      document.getElementById("showScore").innerText = score;
+    }
+  </script>
+</head>
+<body onload="init();">
+  <header>
+    <img id="titleImage" src="abcTitle.png" />
+    <p id="notice"></p>
+    <!-- <button onclick="speak();">Press to manually speak</button> -->
+ 
+  </header>
+<article onclick="console.log(this);">
+  <audio id="findtheAudio" src="findthe.mp3"></audio>
+  <audio id="wellDoneAudio" src="welldone.mp3"></audio>
+  <audio id="tryAgainAudio" src="hmthatsnotquiterighttryagain.mp3"></audio>
+  <div id='bigLetter'><h1>#</h1></div>
+</article>
+  <footer>
+    <h1>Streak: <span id="showScore">0</span></h1>
+    <div id='buttonsContainer'>
+      <button onclick"useInSentence(index)">Use in sentence</button>  
+      <button onclick='runQuiz()'>Quiz!</button> 
+      <button onclick="highlightRandomLetter()">Give me a letter!</button> 
+      
+    </div>
+  </footer>
+</body>
+<!-- audio queue https://gist.github.com/yuraloginoff/1e390ea33edb83d82732 -->
+<!--Drag and drop to put them in order (new game)-->
+<!--Canvas to draw, then check whether right-->
