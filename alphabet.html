@@ -164,7 +164,7 @@ if(callback)
     function init() {
       alphabet.forEach((letter, index) => {
         document.querySelector("article").innerHTML += `
-        <div data-index="${index}" onclick="playback(document.getElementById('audio-${letter}'));" data-letter='${letter}' class="letter"><audio class="letterSound" src="${letter}.mp3" id="audio-${letter}"></audio><div class="imageContainer"><img onerror="this.src='picsoon.png'; this.onerror = null"" src="${letter}.png" /></div>${letter.toUpperCase()}</div>`;
+        <div data-index="${index}" onclick="playback(document.getElementById('audio-${letter}'));" data-letter='${letter}' class="letter"><audio preload="auto" class="letterSound" src="${letter}.mp3" id="audio-${letter}"></audio><div class="imageContainer"><img onerror="this.src='picsoon.png'; this.onerror = null"" src="${letter}.png" /></div>${letter.toUpperCase()}</div>`;
       });
     }
 
